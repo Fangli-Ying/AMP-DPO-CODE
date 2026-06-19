@@ -1,0 +1,10 @@
+pandas=1.4.4
+torch=1.13.1+cu117
+tqdm=4.46.1
+transformers=4.27.1
+numpy=1.23.3
+sklearn=1.2.2
+ml_things=0.0.1
+matplotlib=3.4.3
+json=2.0.9
+python=3.8.13
