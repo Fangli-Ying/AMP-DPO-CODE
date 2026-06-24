@@ -156,18 +156,18 @@ def run_amp_prediction(config):
         return True
 
     except subprocess.CalledProcessError as e:
-        print("\n❌ 错误: 预测脚本执行失败")
+        print("\n错误: 预测脚本执行失败")
         print(f"退出码: {e.returncode}")
         print(f"错误信息:\n{e.stderr}")
         return False
 
     except FileNotFoundError:
-        print("\n❌ 错误: 找不到 'python' 命令")
+        print("\n错误: 找不到 'python' 命令")
         print("请确保Python已正确安装并添加到系统PATH")
         return False
 
     except Exception as e:
-        print(f"\n❌ 未知错误: {str(e)}")
+        print(f"\n未知错误: {str(e)}")
         import traceback
         traceback.print_exc()
         return False
@@ -224,7 +224,7 @@ def main():
 
     # 如果是测试模式
     if args.test:
-        print("🔍 测试模式 - 只检查环境")
+        print("测试模式 - 只检查环境")
         print("=" * 60)
         check_paths(config)
         print("=" * 60)
@@ -233,7 +233,7 @@ def main():
 
     # 检查路径
     if not check_paths(config):
-        print("❌ 路径检查失败，退出程序")
+        print("路径检查失败，退出程序")
         sys.exit(1)
 
     # 运行预测

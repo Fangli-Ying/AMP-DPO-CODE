@@ -1,99 +1,79 @@
-# Model Overview
 
-This repository contains a suite of Large Language Models (LLMs) designed for high-throughput mining and generation of antimicrobial peptides (AMPs). Each model serves a unique purpose in the discovery and evaluation of potential AMPs:
 
-- **ProteoGPT**: A pre-trained model for generating and analyzing amino acid sequences.
-- **AMPGenix**: A sequence generator capable of producing potential AMP sequences.
-- **AMPSorter**: A classifier designed to identify AMPs from peptide datasets.
-- **BioToxiPept**: A classifier aimed at determining the cytotoxicity of short peptides.
+## Prerequisites
 
-All models and config files can be downloaded from [here](https://drive.google.com/drive/folders/19cOtRtZzU3JAglaRFLbc5M1aMmjYTUgV?usp=drive_link). 
-
-## Installation
-
-Clone this repository to your local machine using:
+Before running the scripts, ensure that you have the necessary dependencies installed. You can install them using:
 
 ```bash
-git clone https://github.com/W1V1995/AMP_Project.git
+pip install -r requirements.txt
 ```
 
-Download the `AMP_models` and place it in the `AMP_Project` directory.
+Other required models and dependencies can be obtained from the following sources:
 
-Navigate into the cloned directory:
+[ProtGPT2](https://huggingface.co/nferruz/ProtGPT2/tree/main),
+[AMPSorter](https://drive.google.com/drive/folders/19cOtRtZzU3JAglaRFLbc5M1aMmjYTUgV?usp=drive_link),
+[BioToxiPept](https://drive.google.com/drive/folders/19cOtRtZzU3JAglaRFLbc5M1aMmjYTUgV?usp=drive_link)
+
+## Run
+Here, we show how to run MulAMP to generate antimicrobial peptide sequence
+
+Finetune protein language models.
 
 ```bash
-cd AMP_Project
+python prefix_tuning_prot.py --batch_size 16 --epochs 50 --dataset_path ./dataset/function/amp.tsv --dataset_name function_0 --output_path ./candidate_prefix_tuning_model/
 ```
 
-Ensure that all dependencies are installed by following the installation instructions provided in the `requirements.txt` file or the dedicated installation guide.
+### 2. Candidate Antimicrobial Sequences Generation
 
-## Usage
-
-### Fine-tuning
-
-To create a classifier by fine-tuning, execute the following command:
+This script generates candidate sequences using the chosen prefix-tuning model.
 
 ```bash
-sh Fine-tuning_classifier.sh
+python generate_candidate_sequence.py --model_path ./prefix_tuning_model/
 ```
 
-To create a generator by fine-tuning, execute the following command:
-
+### 3. Candidate Sequences Evaluation
+We first employ AMPSorter to predict antimicrobial activity.
 ```bash
-sh Fine-tuning_generator.sh
+python run_amp_predictor.py
 ```
-
-Parameters such as `batch_size`, `epochs`, etc., and output path can be customized.
-
-### AMP Generation
-
-To generate sequences using AMPGenix, run:
-
+Then we utilize BioToxiPept to predict cytotoxicity.
 ```bash
-sh AMPGenix.sh
+python run_biotoxipept.py
 ```
 
-Parameters such as `ntokens`, `nsamples`, `prefix`, `model_path`, `save_samples_path`, etc., can be adjusted as per your requirements.
+### 4. Construct preference optimization dataset and train the model:
 
-### AMP Prediction
+Here we provide the preprocessed files in /dpo_dataset_amp_toxin
 
-For identifying AMPs from a peptide dataset using AMPSorter, execute:
-
+We then train the model on the constructed preference optimization dataset.
 ```bash
-sh AMPSorter_predictor.sh
+python train_mlpo.py --batch_size 16 --epochs 50 --lr 5e-5 --dataset_path ./dpo_dataset_amp_toxin --dataset_name function_0 --model_path ./prefix_tuning_model/function_0/
 ```
 
-Customize parameters including `batch_size`, `raw_data_path`, `model_path`, `classifier_path`, `output_path`, `candidate_amp_path`, etc., to fit your dataset and path.
+### 5.Generation and evaluation
 
-### Cytotoxicity Prediction
-
-To predict the cytotoxicity of short peptides with BioToxiPept, use:
-
+Then we can generate and test the result.
 ```bash
-sh BioToxiPept.sh
+python easy_inference.py
 ```
 
-Adjustable parameters are `batch_size`, `raw_data_path`, `model_path`, `classifier_path`, `output_path`, `candidate_pep_path`, etc.
 
-### QSAR Prediction
 
-To predict the antimicrobial activity of short peptides based on charged residues and hydrophobic residues, use:
 
-```bash
-python QSAR.py
-```
 
-Adjustable parameters are `samples_path`,  `output_path`.
 
-## Data Preparation
 
-To utilize AmpSorter or BioToxiPept for predictions, prepare a CSV file containing your sequence data. Ensure the file includes a column named "Sequence". Example format:
 
-```csv
-Sequence
-<sequence_1>
-<sequence_2>
-...
-```
 
-Save your dataset in the format `/Data/Sequence.csv` or modify the script parameters to point to your custom data path.
+
+
+
+
+
+
+
+
+
+
+
+

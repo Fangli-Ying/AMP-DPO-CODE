@@ -23,38 +23,38 @@ DEFAULT_CONFIG = {
 
 def check_paths(config):
     """检查所有路径是否存在"""
-    print("🔍 检查文件路径...")
+    print("检查文件路径...")
     issues = []
     warnings = []
 
     # 检查输入文件
     if not os.path.exists(config["raw_data_path"]):
-        issues.append(f"❌ 输入文件不存在: {config['raw_data_path']}")
+        issues.append(f" 输入文件不存在: {config['raw_data_path']}")
 
     # 检查模型目录
     if not os.path.exists(config["model_path"]):
-        warnings.append(f"⚠ 模型路径不存在: {config['model_path']}")
+        warnings.append(f" 模型路径不存在: {config['model_path']}")
 
     # 检查分类器文件
     if not os.path.exists(config["classifier_path"]):
-        issues.append(f"❌ 分类器文件不存在: {config['classifier_path']}")
+        issues.append(f"分类器文件不存在: {config['classifier_path']}")
 
     # 检查输出目录是否存在，不存在则创建
     for path_key in ["output_path", "candidate_pep_path"]:
         path = config[path_key]
         output_dir = os.path.dirname(path)
         if output_dir and not os.path.exists(output_dir):
-            print(f"📁 创建目录: {output_dir}")
+            print(f"创建目录: {output_dir}")
             os.makedirs(output_dir, exist_ok=True)
 
     # 显示检查结果
     if warnings:
-        print("\n📋 警告信息:")
+        print("\n警告信息:")
         for warning in warnings:
             print(f"  {warning}")
 
     if issues:
-        print("\n❌ 发现以下严重问题:")
+        print("\n发现以下严重问题:")
         for issue in issues:
             print(f"  {issue}")
         print("\n是否继续? (y/n): ", end="")
@@ -62,7 +62,7 @@ def check_paths(config):
         if response not in ['y', 'yes']:
             return False
     elif not warnings:
-        print("✅ 所有路径检查通过")
+        print("所有路径检查通过")
 
     return True
 
@@ -88,7 +88,7 @@ def run_biotoxipept_prediction(config):
                 print(f"找到预测脚本: {name}")
                 break
         else:
-            print(f"❌ 错误: 找不到 BioToxiPept 预测脚本")
+            print(f"错误: 找不到 BioToxiPept 预测脚本")
             print("请在当前目录放置以下文件之一:")
             for name in possible_names:
                 print(f"  - {name}")
@@ -110,13 +110,13 @@ def run_biotoxipept_prediction(config):
     print("\n" + "=" * 70)
     print("🧬 BioToxiPept 毒性肽预测")
     print("=" * 70)
-    print(f"📜 预测脚本: {predictor_script}")
-    print(f"⚙️  批次大小: {config['batch_size']}")
-    print(f"📥 输入文件: {config['raw_data_path']}")
-    print(f"🤖 基础模型: {config['model_path']}")
-    print(f"🎯 分类器: {config['classifier_path']}")
-    print(f"📤 毒性肽输出: {config['output_path']}")
-    print(f"📤 非毒性肽输出: {config['candidate_pep_path']}")
+    print(f"预测脚本: {predictor_script}")
+    print(f"批次大小: {config['batch_size']}")
+    print(f"输入文件: {config['raw_data_path']}")
+    print(f"基础模型: {config['model_path']}")
+    print(f"分类器: {config['classifier_path']}")
+    print(f"毒性肽输出: {config['output_path']}")
+    print(f"非毒性肽输出: {config['candidate_pep_path']}")
     print("=" * 70 + "\n")
 
     try:
@@ -131,19 +131,19 @@ def run_biotoxipept_prediction(config):
 
         # 显示输出信息
         if result.stdout:
-            print("📋 标准输出:")
+            print("标准输出:")
             print("-" * 40)
             print(result.stdout.strip())
             print("-" * 40)
 
         if result.stderr and result.stderr.strip():
-            print("⚠ 标准错误:")
+            print(" 标准错误:")
             print("-" * 40)
             print(result.stderr.strip())
             print("-" * 40)
 
         print("\n" + "=" * 70)
-        print("✅ BioToxiPept 预测完成!")
+        print("BioToxiPept 预测完成!")
         print("=" * 70)
 
         # 检查输出文件
@@ -155,7 +155,7 @@ def run_biotoxipept_prediction(config):
         for file_desc, file_path in output_files:
             if os.path.exists(file_path):
                 file_size = os.path.getsize(file_path)
-                print(f"\n📊 {file_desc}:")
+                print(f"\n {file_desc}:")
                 print(f"  文件路径: {file_path}")
                 print(f"  文件大小: {file_size:,} 字节")
 
@@ -172,7 +172,7 @@ def run_biotoxipept_prediction(config):
                     except Exception as e:
                         print(f"  无法读取文件详细信息: {e}")
             else:
-                print(f"\n❌ {file_desc}未生成: {file_path}")
+                print(f"\n {file_desc}未生成: {file_path}")
 
         print("\n" + "=" * 70)
         return True
@@ -183,18 +183,18 @@ def run_biotoxipept_prediction(config):
         return False
 
     except subprocess.CalledProcessError as e:
-        print("\n❌ 错误: 预测脚本执行失败")
+        print("\n错误: 预测脚本执行失败")
         print(f"退出码: {e.returncode}")
         print(f"错误信息:\n{e.stderr}")
         return False
 
     except FileNotFoundError:
-        print("\n❌ 错误: 找不到 'python' 命令")
+        print("\n错误: 找不到 'python' 命令")
         print("请确保Python已正确安装并添加到系统PATH")
         return False
 
     except Exception as e:
-        print(f"\n❌ 未知错误: {str(e)}")
+        print(f"\n 未知错误: {str(e)}")
         import traceback
         traceback.print_exc()
         return False
@@ -215,7 +215,7 @@ candidate_pep_path = D:\\AMP_Project-main\\AMP_Project-main\\Data\\Sequence_nont
 
     with open("biotoxipept_config.ini", "w", encoding="utf-8") as f:
         f.write(config_content)
-    print("✅ 配置文件已创建: biotoxipept_config.ini")
+    print("配置文件已创建: biotoxipept_config.ini")
 
 
 def main():
@@ -287,7 +287,7 @@ def main():
 
     # 显示配置信息
     print("\n" + "=" * 70)
-    print("🧪 BioToxiPept 配置信息")
+    print("BioToxiPept 配置信息")
     print("=" * 70)
     for key, value in config.items():
         print(f"{key:20}: {value}")
@@ -295,16 +295,16 @@ def main():
 
     # 如果是测试模式
     if args.test:
-        print("\n🔍 测试模式 - 只检查环境")
+        print("\n测试模式 - 只检查环境")
         if check_paths(config):
-            print("\n✅ 环境检查通过，可以正常运行预测")
+            print("\n环境检查通过，可以正常运行预测")
         else:
-            print("\n❌ 环境检查失败，请解决上述问题")
+            print("\n环境检查失败，请解决上述问题")
         sys.exit(0)
 
     # 检查路径
     if not check_paths(config):
-        print("❌ 路径检查失败，退出程序")
+        print("路径检查失败，退出程序")
         sys.exit(1)
 
     # 运行预测
@@ -312,9 +312,9 @@ def main():
 
     # 返回退出码
     if success:
-        print("\n🎉 BioToxiPept 预测任务成功完成!")
+        print("\nBioToxiPept 预测任务成功完成!")
     else:
-        print("\n💀 BioToxiPept 预测任务失败!")
+        print("\n BioToxiPept 预测任务失败!")
 
     sys.exit(0 if success else 1)
 
